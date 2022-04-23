@@ -1,9 +1,10 @@
+import logging
 import time
 
 import requests
 from bs4 import BeautifulSoup
-from database import News, engine
-import logging
+
+from models import News
 
 logging.basicConfig(level=10)
 logger = logging.getLogger('SCRAPPER')
@@ -23,10 +24,8 @@ def start():
 
 
 if __name__ == '__main__':
-    from sqlmodel import Session, select
 
     start()
     while True:
         logger.info('WORKING')
         time.sleep(1)
-
