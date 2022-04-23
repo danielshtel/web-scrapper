@@ -1,6 +1,7 @@
 from telebot import TeleBot
 from ramda import difference
 
+
 def notify(bot: TeleBot, config, message):
     bot.send_message(config.CHANNEL_ID, message)
 
@@ -10,6 +11,7 @@ if __name__ == '__main__':
     from config import settings
     from models import News, SentArticles
     from utils import get_unsent_articles
+
     TEMPLATE = '%s\n%s'
     all_articles = News.get_articles()
     all_sent_articles = SentArticles.get_sent_articles_urls()

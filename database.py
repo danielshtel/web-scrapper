@@ -1,6 +1,6 @@
 from sqlmodel import create_engine, SQLModel
 
-DB_URL = "postgresql+psycopg2://postgres:postgres@localhost:5435/web_scrapper"
+DB_URL = "postgresql+psycopg2://postgres:postgres@database:5432/web_scrapper"
 engine = create_engine(DB_URL)
 
 

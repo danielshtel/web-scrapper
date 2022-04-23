@@ -3,6 +3,7 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
+from sqlalchemy.dialects.postgresql import psycopg2
 
 from models import News
 
@@ -19,8 +20,13 @@ def start():
         result = tag.find('a')
         content = result.get_text()
         url = 'https://www.tesmanian.com/blogs/tesmanian-blog' + result.attrs['href']
-        news_obj = News(content=content, url=url)
-        news_obj.create()
+        try:
+            news_obj = News(content=content, url=url)
+            news_obj.create()
+        except psycopg2.errors.UniqueViolation:
+            continue
+
+
 
 
 if __name__ == '__main__':

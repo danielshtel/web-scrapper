@@ -17,6 +17,8 @@ services:
     ports:
       - "5435:5432"
 
+
+
   web-scrapper:
     image: danielshtel/web-scrapper
     build:
