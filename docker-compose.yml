@@ -1,0 +1,28 @@
+version: '3.9'
+
+volumes:
+  data:
+
+services:
+  database:
+    image: postgres:latest
+    container_name: database
+    environment:
+      POSTGRES_DB: "web_scrapper"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    ports:
+      - "5432:5432"
+
+  web-scrapper:
+    image: danielshtel/web-scrapper
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    command: bash -c "python database.py && python scrapper.py"
+    volumes:
+      - data:/web-scrapper
+    depends_on:
+      - database
+
