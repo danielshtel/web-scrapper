@@ -5,6 +5,7 @@ from database import engine
 
 
 class News(SQLModel, table=True):
+    __tablename__ = 'news'
     id: int | None = Field(None, primary_key=True, index=True)
     content: str = Field(..., index=True)
     url: HttpUrl = Field(..., index=True)
