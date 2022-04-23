@@ -24,8 +24,8 @@ def start():
 
 
 if __name__ == '__main__':
-
-    start()
     while True:
-        logger.info('WORKING')
-        time.sleep(1)
+        logger.info('SCRAPPING . . .')
+        start()
+        logger.info('DONE')
+        time.sleep(15)
