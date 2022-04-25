@@ -21,8 +21,9 @@ def main():
     template = '[%s](%s)'
     site_url = 'https://www.tesmanian.com/blogs/tesmanian-blog'
     requests_session = login()
+    logger.info('SUCCESS LOGIN')
     while True:
-
+        logger.info('SCRAPPING . . .')
         request = get_request(session=requests_session, url=site_url)
         soup: BeautifulSoup = BeautifulSoup(request.content, 'lxml')
         result = soup.find_all('div', {'class': 'eleven columns omega align_left'})
@@ -54,15 +55,15 @@ def main():
                 article = session.exec(select(News).where(News.url == article_to_send)).one()
                 notify(bot=bot, config=settings, message=(template % (article.content, article.url)))
                 SentArticles.create(url=article_to_send)
+        logger.info('DONE\n SLEEPING 15 SECS')
         time.sleep(15)
 
 
 def login():
     login_url = 'https://www.tesmanian.com/account/login'
     user_agent = {
-        "User-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 "
-                      "Safari/537.36"}
-    payload = {'customer[email]': 'daniillevchenko98@gmail.com', 'customer[password]': '159753159753bB!'}
+        "User-agent": settings.USER_AGENT}
+    payload = {'customer[email]': settings.USERNAME, 'customer[password]': settings.PASSWORD}
     with requests.Session() as requests_session:
         post = requests_session.post(login_url, data=payload, headers=user_agent)
         if post.status_code != HTTPStatus.OK:
@@ -81,6 +82,4 @@ def get_request(session: requests.Session, url: str):
 
 
 if __name__ == '__main__':
-    logger.info('SCRAPPING . . .')
     main()
-    logger.info('DONE')
