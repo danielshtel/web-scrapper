@@ -17,15 +17,30 @@ services:
     ports:
       - "5435:5432"
 
+  bot:
+    image: danielshtel/bot
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - database
+    command: bash -c "python bot.py"
+    ports:
+      - "80:80"
   web-scrapper:
     image: danielshtel/web-scrapper
     build:
       context: .
       dockerfile: Dockerfile
 
-    command: bash -c "python bot.py && python database.py && python scrapper.py"
+    command: bash -c "python database.py && python scrapper.py"
+    env_file:
+      - .env
     volumes:
       - app:/web-scrapper
     depends_on:
-      - database
+      - bot
 
