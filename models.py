@@ -1,7 +1,11 @@
 from pydantic import HttpUrl
 from sqlmodel import SQLModel, Field, Session, select
+from sqlmodel.sql.expression import Select, SelectOfScalar  # https://github.com/tiangolo/sqlmodel/issues/189
 
 from database import engine
+
+SelectOfScalar.inherit_cache = True
+Select.inherit_cache = True
 
 
 class News(SQLModel, table=True):
