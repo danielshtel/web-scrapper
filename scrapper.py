@@ -1,17 +1,21 @@
 import logging
 import time
+from http import HTTPStatus
 
 import requests
 from bs4 import BeautifulSoup
-from ramda import difference
+from ramda import difference, is_empty
 from sqlmodel import Session, select
+from sqlmodel.sql.expression import Select, SelectOfScalar  # https://github.com/tiangolo/sqlmodel/issues/189
 
 from bot import bot
 from config import settings
 from database import engine
 from models import News, SentArticles
 from notifier import notify
-from http import HTTPStatus
+
+SelectOfScalar.inherit_cache = True
+Select.inherit_cache = True
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('SCRAPPER')
@@ -21,15 +25,14 @@ def main():
     template = '[%s](%s)'
     site_url = 'https://www.tesmanian.com/blogs/tesmanian-blog'
     requests_session = login()
-    logger.info('SUCCESS LOGIN')
+    logger.info('Success sign-in')
     while True:
-        logger.info('SCRAPPING . . .')
+        logger.info('Scrapping...')
         request = get_request(session=requests_session, url=site_url)
         soup: BeautifulSoup = BeautifulSoup(request.content, 'lxml')
         result = soup.find_all('div', {'class': 'eleven columns omega align_left'})
         existing_url_articles = [i.url for i in News.get_articles()]
         parsed_articles = dict()
-        # TODO refactor blocks
         for tag in result:
             result = tag.find('a')
             content = result.get_text()
@@ -38,25 +41,31 @@ def main():
 
         parsed_articles_urls = [i for i in parsed_articles.keys()]
         delta = difference(parsed_articles_urls, existing_url_articles)
+        if not is_empty(delta):
+            for url in delta:
+                try:
+                    news_obj = News(content=parsed_articles[url], url=url)
+                    news_obj.create()
+                except Exception as e:
+                    logger.error(e)
+                    continue
+            fresh_articles = [i.url for i in News.get_articles()]
+            sent_articles = [i.url for i in SentArticles.get_all()]
+            delta_sent = difference(fresh_articles, sent_articles)
 
-        for url in delta:
-            try:
-                news_obj = News(content=parsed_articles[url], url=url)
-                news_obj.create()
-            except Exception as e:
-                logger.error(e)
-                continue
-        fresh_articles = [i.url for i in News.get_articles()]  # TODO need optimization
-        sent_articles = [i.url for i in SentArticles.get_all()]
-        delta_sent = difference(fresh_articles, sent_articles)
-
-        for article_to_send in reversed(delta_sent):
-            with Session(engine) as session:
-                article = session.exec(select(News).where(News.url == article_to_send)).one()
-                notify(bot=bot, config=settings, message=(template % (article.content, article.url)))
-                SentArticles.create(url=article_to_send)
-        logger.info('DONE\n SLEEPING 15 SECS')
+            for article_to_send in reversed(delta_sent):
+                with Session(engine) as session:
+                    article = session.exec(select(News).where(News.url == article_to_send)).one()
+                    notify(bot=bot, config=settings, message=(template % (article.content, article.url)))
+                    SentArticles.create(url=article_to_send)
+            logger.info('Done')
+            logger.info('Sleeping 15 secs...')
+            time.sleep(15)
+        logger.info('There is no new articles...')
+        logger.info('Sleeping 15 secs...')
         time.sleep(15)
+        logger.info('Continuing')
+        continue
 
 
 def login():
