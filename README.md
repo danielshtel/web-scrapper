@@ -9,6 +9,7 @@ to [Tesmanian](https://t.me/tesmanian) telegram channel.
 ## Tech:
 
 - Python 3.10
+- requests
 - Beautifulsoup4
 - PostgreSQL
 - Telebot
