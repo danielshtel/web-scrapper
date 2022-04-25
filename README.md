@@ -22,7 +22,7 @@ to [Tesmanian](https://t.me/tesmanian) telegram channel.
 git clone git@github.com:danielshtel/web-scrapper.git
 ```
 
-⚠️ **Copy env.tmpl to .env and substitute the default values with your own usernames and passwords.**
+⚠️ **Copy env.tmpl to `.env` and substitute the default values with your own usernames and passwords.**
 
 ### Web-scrapper Docker:
 
