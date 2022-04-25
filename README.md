@@ -46,6 +46,6 @@ docker-compose stop
 
 ### How it works? 🤔
 
-Welcome to my demo telegram channel [Tesmanian](https://t.me/tesmanian) to see how it works! 🎇
+Welcome to my demo telegram channel [Tesmanian](https://t.me/tesmanian) to see how it works! 🎇\
 **Subscribe** and read actual news! 
 
