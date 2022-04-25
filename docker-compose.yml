@@ -1,7 +1,7 @@
 version: '3.9'
 
 volumes:
-  data:
+  app:
   database:
 
 services:
@@ -13,11 +13,9 @@ services:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
     volumes:
-      - database:/postgresql/data
+      - database:/var/lib/postgresql/data
     ports:
       - "5435:5432"
-
-
 
   web-scrapper:
     image: danielshtel/web-scrapper
@@ -25,9 +23,9 @@ services:
       context: .
       dockerfile: Dockerfile
 
-    command: bash -c "python database.py && python scrapper.py"
+    command: bash -c "python bot.py && python database.py && python scrapper.py"
     volumes:
-      - data:/web-scrapper
+      - app:/web-scrapper
     depends_on:
       - database
 
