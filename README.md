@@ -42,7 +42,13 @@ docker-compose up
 #### To stop services:
 
 ```shell
-docker-compose stop
+docker-compose down
+```
+
+#### If you want to remove all your data, use:
+
+```shell
+docker volume prune
 ```
 
 ### How it works? 🤔
