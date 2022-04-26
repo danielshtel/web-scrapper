@@ -81,14 +81,16 @@ def login():
 
 
 def get_request(session: requests.Session, url: str):
-    with session:
-        request = session.get(url)
-        if request.status_code == HTTPStatus.UNAUTHORIZED:
-            requests_session = login()
-            request = get_request(session=requests_session, url=url)
+    try:
+        with session:
+            request = session.get(url)
+            if request.status_code == HTTPStatus.UNAUTHORIZED:
+                requests_session = login()
+                request = get_request(session=requests_session, url=url)
+                return request
             return request
-        return request
-
+    except requests.exceptions.ConnectionError:
+        return get_request(session=session, url=url)
 
 if __name__ == '__main__':
     main()
